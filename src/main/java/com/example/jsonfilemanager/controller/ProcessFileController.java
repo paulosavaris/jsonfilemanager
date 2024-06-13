@@ -16,7 +16,6 @@ public class ProcessFileController {
 
     private static final String JSON_FILES_DIRECTORY = "D:\\Faculdade\\pos\\Dev Back_end\\jsonfilemanager\\json_files";
     private static final String PROCESSED_FILES_RECORD = JSON_FILES_DIRECTORY + "\\processed_files.txt";
-    private int currentIndex = 0;
 
     @GetMapping("/get_next_file")
     public String getNextFile() {

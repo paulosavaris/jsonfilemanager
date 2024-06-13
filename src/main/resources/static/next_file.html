@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process JSON Files</title>
+    <script>
+        async function processNextFile() {
+            const response = await fetch('/get_next_file');
+            const text = await response.text();
+            document.getElementById('fileContent').innerText = text;
+        }
+    </script>
+</head>
+<body>
+    <h1>Process JSON Files</h1>
+    <button onclick="processNextFile()">Process Next File</button>
+    <h2>File Content:</h2>
+    <pre id="fileContent">Click the button to process the next file.</pre>
+</body>
+</html>
