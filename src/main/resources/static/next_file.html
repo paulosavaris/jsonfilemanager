@@ -3,19 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Process JSON Files</title>
+    <title>
+        Processar arquivos JSON</title>
     <script>
         async function processNextFile() {
             const response = await fetch('/get_next_file');
             const text = await response.text();
-            document.getElementById('fileContent').innerText = text;
+            const data = text.split('\n\n');
+            document.getElementById('nextFileContent').innerText = data[0].replace('Conteudo do proximo arquivo:\n', '');
+            document.getElementById('processedFiles').innerText = data[1].replace('Arquivos Processados: ', '');
+            document.getElementById('remainingFiles').innerText = data[2].replace('Arquivos restantes: ', '');
         }
     </script>
 </head>
 <body>
-    <h1>Process JSON Files</h1>
-    <button onclick="processNextFile()">Process Next File</button>
-    <h2>File Content:</h2>
-    <pre id="fileContent">Click the button to process the next file.</pre>
+    <h1>
+        Processar arquivos JSON</h1>
+    <button onclick="processNextFile()">Processar proximo arquivo</button>
+    <h2>Conteudo do proximo arquivo:</h2>
+    <pre id="nextFileContent">Clique no botao para processar o proximo arquivo.</pre>
+    <h2>Arquivos Processados:</h2>
+    <pre id="processedFiles">Nenhum arquivo processado ainda.</pre>
+    <h2>Arquivos restantes:</h2>
+    <pre id="remainingFiles">Nenhum arquivo restante.</pre>
+    <button onclick="window.location.href='/send_file.html'">Va para Enviar arquivos</button>
 </body>
 </html>

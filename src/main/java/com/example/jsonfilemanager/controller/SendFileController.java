@@ -32,10 +32,10 @@ public class SendFileController {
             FileWriter fileWriter = new FileWriter(new File(directory, fileName));
             fileWriter.write(jsonData);
             fileWriter.close();
-            return "File saved successfully!";
+            return "Arquivo salvo com sucesso!";
         } catch (IOException e) {
             e.printStackTrace();
-            return "Error saving file.";
+            return "Erro ao salvar arquivo.";
         }
     }
 }

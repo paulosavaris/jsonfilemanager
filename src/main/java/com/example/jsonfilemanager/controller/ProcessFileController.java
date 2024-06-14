@@ -7,12 +7,14 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ProcessFileController {
+
 
     private static final String JSON_FILES_DIRECTORY = "D:\\Faculdade\\pos\\Dev Back_end\\jsonfilemanager\\json_files";
     private static final String PROCESSED_FILES_RECORD = JSON_FILES_DIRECTORY + "\\processed_files.txt";
@@ -23,29 +25,43 @@ public class ProcessFileController {
         File[] files = folder.listFiles((dir, name) -> name.endsWith(".json"));
 
         if (files == null || files.length == 0) {
-            return "No files in the queue!";
+            return "Nenhum arquivo na fila!";
         }
 
-        // Load processed files
+        // Carregar arquivos processados
         Set<String> processedFiles = loadProcessedFiles();
 
-        for (File file : files) {
-            if (!processedFiles.contains(file.getName())) {
-                try {
-                    List<String> lines = Files.readAllLines(file.toPath());
-                    StringBuilder content = new StringBuilder();
-                    for (String line : lines) {
-                        content.append(line);
-                    }
-                    markFileAsProcessed(file.getName());
-                    return content.toString();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return "Error reading file.";
-                }
-            }
+        // Obtenha os arquivos restantes
+        List<File> remainingFiles = getRemainingFiles(files, processedFiles);
+
+        // Se não houver arquivos restantes
+        if (remainingFiles.isEmpty()) {
+            return "Nenhum arquivo na fila!";
         }
-        return "No files in the queue!";
+
+        File nextFile = remainingFiles.get(0);
+        try {
+            List<String> lines = Files.readAllLines(nextFile.toPath());
+            StringBuilder content = new StringBuilder();
+            for (String line : lines) {
+                content.append(line);
+            }
+            markFileAsProcessed(nextFile.getName());
+
+            // Carrega os arquivos processados ​​novamente para obter a lista atualizada
+            processedFiles = loadProcessedFiles();
+
+            // Atualizar os arquivos restantes
+            remainingFiles = getRemainingFiles(files, processedFiles);
+
+            return String.format("Conteudo do proximo arquivo:\n%s\n\nArquivos Processados: %s\n\nArquivos restantes: %s", 
+                                 content.toString(), 
+                                 processedFiles, 
+                                 remainingFiles.stream().map(File::getName).collect(Collectors.toList()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error na leitura de arquivo.";
+        }
     }
 
     private Set<String> loadProcessedFiles() {
@@ -71,29 +87,9 @@ public class ProcessFileController {
         }
     }
 
+    private List<File> getRemainingFiles(File[] files, Set<String> processedFiles) {
+        return List.of(files).stream()
+                             .filter(file -> !processedFiles.contains(file.getName()))
+                             .collect(Collectors.toList());
+    }
 } 
-
-//     private int currentIndex = 0;
-
-//     @GetMapping("/get_next_file")
-//     public String getNextFile() {
-//         File folder = new File(".");
-//         File[] files = folder.listFiles((dir, name) -> name.endsWith(".json"));
-        
-//         if (files != null && currentIndex < files.length) {
-//             try {
-//                 List<String> lines = Files.readAllLines(files[currentIndex++].toPath());
-//                 StringBuilder content = new StringBuilder();
-//                 for (String line : lines) {
-//                     content.append(line);
-//                 }
-//                 return content.toString();
-//             } catch (IOException e) {
-//                 e.printStackTrace();
-//                 return "Error reading file.";
-//             }
-//         } else {
-//             return "No files in the queue!";
-//         }
-//     }
-// }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar arquivo JSON</title>
+    <script>
+        async function sendJsonFile(event) {
+            event.preventDefault();
+            const jsonData = document.getElementById('jsonData').value;
+            const response = await fetch('/send_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            });
+            const result = await response.text();
+            document.getElementById('responseMessage').innerText = result;
+            document.getElementById('jsonData').value = '';  // limpa o campo de texto
+        }
+    </script>
+</head>
+<body>
+    <h1>Enviar arquivo JSON</h1>
+    <form id="jsonForm" onsubmit="sendJsonFile(event)">
+        <textarea id="jsonData" name="jsonData" rows="10" cols="50"></textarea><br>
+        <input type="submit" value="Enviar">
+    </form>
+    <p id="responseMessage"></p>
+    <button onclick="window.location.href='/next_file.html'">Va para processar arquivos</button>
+</body>
+</html>
